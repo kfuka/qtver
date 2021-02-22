@@ -85,6 +85,7 @@ class MyWindow(QMainWindow): # QWidgetクラスを使用します。
         print("handle")
     
     def updateslice(self):
+        # ここが2回呼ばれている？
         current_slice = self.sld.value()
 
         self.imv.setImage(self.array[int(current_slice), :, :],
@@ -95,16 +96,9 @@ class MyWindow(QMainWindow): # QWidgetクラスを使用します。
         # ROIがあれば
         if current_slice in self.roi_corrections:
             for n, a_roi in enumerate(self.rois):
-                # 1つ目のROIはうまくいくけど2つ目のROIがうまくいっていない
-                print(self.roi_corrections[current_slice][n])
-                a_roi.setPos(np.array(self.roi_corrections[current_slice][n]) - 15, update=True)              
-        else:
-            # for a_roi in self.rois:
-            #    a_roi.setPos([500, 500],update=True)
-            pass
+                a_roi.setPos(np.array(self.roi_corrections[current_slice][n]) - 15, update=False)              
+
         
-
-
 
 
     def selectfile(self):
@@ -164,13 +158,6 @@ class MyWindow(QMainWindow): # QWidgetクラスを使用します。
             # self.roi_corrections[current_slice].append([roi.pos().x() + 15, roi.pos().y() + 15])
             roi_update.append([roi.pos().x() + 15, roi.pos().y() + 15])
         self.roi_corrections[current_slice] = roi_update
-
-
-        
-
-
-
-
 
 
 

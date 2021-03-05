@@ -8,7 +8,7 @@ import numpy as np
 from PyQt5.QtCore import Qt
 import matplotlib.pyplot as plt
 
-from PyQt5.QtWidgets import QAction, QFileDialog, QMainWindow, QApplication, QAction, QPushButton, QSlider, QVBoxLayout, QWidget, qApp
+from PyQt5.QtWidgets import QAction, QFileDialog, QHBoxLayout, QMainWindow, QApplication, QAction, QPushButton, QSlider, QVBoxLayout, QWidget, qApp, QGridLayout
 from pathlib import Path
 
 from pyqtgraph.graphicsItems.ROI import ROI
@@ -37,7 +37,7 @@ class MyWindow(QMainWindow): # QWidgetクラスを使用します。
     def initUI(self):
         centerWidget = QWidget()
         self.setCentralWidget(centerWidget)
-        self.layout = QVBoxLayout()
+        self.layout = QGridLayout()
         centerWidget.setLayout(self.layout)
 
         exitAction = QAction(' &Exit', self)
@@ -67,17 +67,24 @@ class MyWindow(QMainWindow): # QWidgetクラスを使用します。
         # ImageViewをつけたところ
         self.imv = ImageView()
         self.imv.imageItem.mouseClickEvent = self.mouse_click
-        self.layout.addWidget(self.imv)
+        self.layout.addWidget(self.imv, 0,0)
         self.imv.ui.roiBtn.hide()
         self.imv.ui.menuBtn.hide() 
 
+        self.imv2 = ImageView()
+        self.imv2.imageItem.mouseClickEvent = self.mouse_click
+        self.layout.addWidget(self.imv2, 0,1)
+        self.imv2.ui.roiBtn.hide()
+        self.imv2.ui.menuBtn.hide()
 
-        self.layout.addWidget(self.sld)
+
+
+        self.layout.addWidget(self.sld, 1,0)
 
         # 計算ボタンをつけた．これいる？
         btn = QPushButton(text="calc dicom")
         btn.clicked.connect(self.load_dicom)
-        self.layout.addWidget(btn)
+        self.layout.addWidget(btn, 1,1)
 
         self.show()
 

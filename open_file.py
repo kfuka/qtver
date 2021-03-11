@@ -1,8 +1,9 @@
-from PyQt5.QtWidgets import (QHBoxLayout, QMainWindow, QPushButton, QTextEdit,QAction,QFileDialog,QApplication, QVBoxLayout, QWidget, QCheckBox, QLabel, QGridLayout)
+from PyQt5.QtWidgets import (QHBoxLayout, QMainWindow, QPushButton, QTextEdit,QAction,QFileDialog,QApplication, QVBoxLayout, QWidget, QCheckBox, QLabel, QGridLayout, QDialog)
 from PyQt5.QtGui import QIcon
 import sys
 import glob
 import pydicom
+import numpy as np
  
 wave_colors = ['magenta', 'blue', 'red', 'green', 'cyan', 'yellow', 'black']
 
@@ -23,27 +24,32 @@ class openDirectory(QMainWindow):
         return self.folder
 
 
-class openDicoms(QWidget):
-    def __init__(self, folder_dict):
-        super().__init__()
+class openDicoms():
+    def __init__(self, folder_dict, parent=None):
+        self.w = QDialog(parent)
+        self.parent = parent
         self.folder_dict = folder_dict
-        self.setStyleSheet("background-color: black;")
+        self.w.setStyleSheet("background-color: black;")
         self.layout = QGridLayout()
-        self.setLayout(self.layout)
+        self.w.setLayout(self.layout)
         self.initUI()
+
+    def show(self):
+        self.w.exec_()
         
 
     def initUI(self):
         positions = [i for i in range(len(self.folder_dict))]
+        self.checks = []
         for n, a_file in enumerate(self.folder_dict):
-            checkBox = QCheckBox(str(
-                a_file[1][0][:2] + ":" + a_file[1][0][2:4] + ":" + a_file[1][0][4:6]))
+            self.checks.append(QCheckBox(str(
+                a_file[1][0][:2] + ":" + a_file[1][0][2:4] + ":" + a_file[1][0][4:6])))
             label = QLabel(str(a_file[0]).split("/")[-1])
             vorh = QLabel(str(a_file[1][2]))
-            checkBox.setStyleSheet("QCheckBox{ color : " + wave_colors[int(n/2.0)] + "; }")
+            self.checks[n].setStyleSheet("QCheckBox{ color : " + wave_colors[int(n/2.0)] + "; }")
             label.setStyleSheet("QLabel{ color : " + wave_colors[int(n/2.0)] + "; }")
             vorh.setStyleSheet("QLabel{ color : " + wave_colors[int(n/2.0)] + "; }")
-            self.layout.addWidget(checkBox, n, 0)
+            self.layout.addWidget(self.checks[n], n, 0)
             self.layout.addWidget(vorh, n, 1)
             self.layout.addWidget(label, n, 2)
         openbtn = QPushButton("Open")
@@ -54,8 +60,14 @@ class openDicoms(QWidget):
 
 
     def get(self):
-        print("good")
-        self.close()
+        return_list = []
+        for n, a_file in enumerate(self.folder_dict):
+            if self.checks[n].checkState() == 0:
+                pass
+            else:
+                return_list.append(a_file)
+        self.parent.get_open_dicoms(return_list)
+        self.w.close()
 
  
 
